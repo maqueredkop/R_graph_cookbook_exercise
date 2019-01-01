@@ -1,0 +1,112 @@
+---
+title: "R graph cookbook chapter 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### line graphs
+
+```{r}
+BOD
+library(gcookbook)
+library(ggplot2)
+ggplot(BOD, aes(x = Time, y = demand)) +
+    geom_line()
+
+ggplot(BOD, aes(x = Time, y = demand)) +
+    geom_line() +
+    ylim(0, max(BOD$demand))
+
+ggplot(BOD, aes(x = Time, y = demand)) +
+    geom_line() +
+    geom_point()
+```
+
+```{r}
+library(gcookbook)
+head(tg)
+ggplot(tg, aes(x = dose, y = length, colour = supp)) +
+    geom_line()
+
+ggplot(tg, aes(x = dose, y = length, linetype = supp)) +
+    geom_line()
+```
+
+```{r}
+ggplot(tg, aes(x = factor(dose), y = length, colour = supp, group = supp)) +
+    geom_line()
+```
+
+```{r}
+ggplot(tg, aes(x = dose, y = length, shape = supp)) +
+    geom_line() +
+    geom_point(size = 4)
+
+ggplot(tg, aes(x = dose, y = length, fill = supp)) +
+    geom_line() +
+    geom_point(size = 4, shape = 21)
+```
+
+```{r}
+ggplot(BOD, aes(x = Time, y = demand)) +
+    geom_line(linetype = 'dashed', size = 1, colour = 'blue')
+```
+
+```{r}
+ggplot(tg, aes(x = dose, y = length, group = supp)) +
+    geom_line(colour = 'darkgreen', size = 1.5)
+
+ggplot(tg, aes(x = dose, y = length, colour = supp)) +
+    geom_line(linetype = 'dashed') +
+    geom_point(shape = 22, size = 3, fill = 'white')
+```
+
+```{r}
+BOD
+ggplot(BOD, aes(x = Time, y = demand)) +
+    geom_line() +
+    geom_point(size = 4, shape = 22, colour = 'darkred', fill = 'pink')
+
+ggplot(BOD, aes(x = Time, y = demand)) +
+    geom_line() +
+    geom_point(size = 4, shape = 21, fill = 'white')
+```
+
+```{r}
+sunspotyear <- data.frame(
+    Year     = as.numeric(time(sunspot.year)),
+    Sunspots = as.numeric(sunspot.year)
+  )
+head(sunspotyear)
+ggplot(sunspotyear, aes(x = Year, y = Sunspots)) +
+    geom_area()
+```
+
+```{r}
+ggplot(sunspotyear, aes(x = Year, y = Sunspots)) +
+    geom_area(colour = 'black', fill = 'blue', alpha = .2)
+
+ggplot(sunspotyear, aes(x = Year, y = Sunspots)) +
+    geom_area(fill = 'blue', alpha = .2) +
+    geom_line()
+```
+
+#### adding a confidence region
+
+```{r}
+library(gcookbook)
+library(dplyr)
+climate_mod <- climate %>% 
+    filter(Source == 'Berkeley') %>%
+    select(Year, Anomaly10y, Unc10y)
+head(climate_mod)
+
+ggplot(climate_mod, aes(x = Year, y = Anomaly10y)) +
+    geom_ribbon(aes(ymin = Anomaly10y - Unc10y,
+                    ymax = Anomaly10y + Unc10y),
+                    alpha = 0.2) +
+    geom_line()
+```
