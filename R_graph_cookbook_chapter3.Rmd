@@ -1,0 +1,187 @@
+---
+title: "R graph cookbook chapter 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### bar graphs
+
+```{r}
+library(gcookbook)
+library(ggplot2)
+library(dplyr)
+pg_mean
+ggplot(pg_mean, aes(x = group, y = weight)) +
+    geom_col()
+```
+
+```{r}
+ggplot(pg_mean, aes(x = group, y = weight)) +
+    geom_col(fill = "grey", colour = "red")
+```
+
+```{r}
+cabbage_exp
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+    geom_col(position = "dodge")
+```
+
+```{r}
+head(diamonds)
+ggplot(diamonds, aes(x = cut)) +
+    geom_bar()
+```
+
+```{r}
+upc <- uspopchange %>%
+    arrange(desc(Change)) %>%
+    slice(1:10)
+upc
+ggplot(upc, aes(x = Abb, y = Change, fill = Region)) + 
+    geom_col()
+```
+
+```{r}
+ggplot(upc, aes(x = reorder(Abb, Change), y = Change, fill = Region)) +
+    geom_col(colour = "black") +
+    scale_fill_manual(values = c("#669933", "#FFCC66")) +
+    xlab("State")
+```
+
+```{r}
+climate_sub <- climate %>%
+  filter(Source == "Berkeley" & Year >= 1900) %>%
+  mutate(pos = Anomaly10y >= 0)
+head(climate_sub)
+ggplot(climate_sub, aes(x = Year, y = Anomaly10y, fill = pos)) +
+    geom_col(position = "identity")
+```
+
+```{r}
+ggplot(climate_sub, aes(x = Year, y = Anomaly10y, fill = pos)) +
+    geom_col(position = "identity", colour = "black", size=0.25) +
+    scale_fill_manual(values = c("#CCEEFF", "#FFDDDD"), guide = FALSE)
+```
+
+```{r}
+ggplot(pg_mean, aes(x = group, y = weight)) +
+    geom_col(width = 0.5)
+```
+
+position = "dodge" is simply shorthand for position = position_dodge() with the default value of 0.9
+
+```{r}
+cabbage_exp
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+    geom_col(width = 0.5, position = "dodge")
+
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+    geom_col(width = 0.5, position = position_dodge(0.7))
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y=Weight, fill = Cultivar)) +
+    geom_col()
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y=Weight, fill = Cultivar)) +
+    geom_col() +
+    guides(fill = guide_legend(reverse = TRUE))
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+    geom_col(position = position_stack(reverse = TRUE)) +
+    guides(fill = guide_legend(reverse = TRUE))
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+    geom_col(colour = "black") +
+    scale_fill_brewer(palette = "Pastel1")
+```
+
+Proportional stacked bar graph
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+    geom_col(position = "fill")
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+    geom_col(position = "fill") +
+    scale_y_continuous(labels = scales::percent)
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = interaction(Date,Cultivar), y = Weight)) +
+    geom_col() +
+    geom_text(aes(label = Weight), vjust = 1.5, colour = "white")
+```
+
+```{r}
+tophit <- tophitters2001[1:25,]
+tophit[, c("name", "lg", "avg")]
+ggplot(tophit, aes(x = avg, y = name)) +
+    geom_point()
+```
+
+```{r}
+ggplot(tophit, aes(x = avg, y = reorder(name, avg))) +
+    geom_point(size = 3) +
+    theme_bw() +
+    theme(
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "grey60",
+                                          linetype = "dashed")
+    )
+```
+
+```{r}
+ggplot(tophit, aes(x = reorder(name, avg), y = avg)) +
+    geom_point(size =3) +
+    theme_bw() +
+    theme(
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(colour = "grey60",
+    linetype = "dashed"),
+        axis.text.x = element_text(angle = 60, hjust = 1)
+    )
+```
+
+```{r}
+nameorder <- tophit$name[order(tophit$lg, tophit$avg)]
+tophit$name <- factor(tophit$name, levels = nameorder)
+ggplot(tophit, aes(x = avg, y = name)) +
+    geom_segment(aes(yend = name), xend = 0, colour = "grey50") +
+    geom_point(size = 3, aes(colour = lg)) +
+    scale_colour_brewer(palette = "Set1", limits = c("NL","AL")) +
+    theme_bw() +
+    theme(
+        panel.grid.major.y = element_blank(),
+        legend.position = c(1, 0.55),
+        legend.justification = c(1, 0.5)
+    )
+```
+
+```{r}
+ggplot(tophit, aes(x = avg, y = name)) +
+    geom_segment(aes(yend = name), xend = 0, colour = "grey50") +
+    geom_point(size = 3, aes(colour = lg)) +
+    scale_colour_brewer(palette = "Set1", limits = c("NL","AL")) +
+    theme_bw() +
+    theme(panel.grid.major.y = element_blank()) +
+    facet_grid(lg ~., scales = "free_y", space = "free_y")
+```
+
+
+    
+
+
+

@@ -1,0 +1,131 @@
+---
+title: "R graph cookbook chapter 2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## R graph cookbook examples
+
+```{r}
+library(dplyr,verbose = FALSE)
+library(ggplot2)
+```
+
+```{r}
+plot(mtcars$wt, mtcars$mpg)
+```
+
+using ggplot2 to plot 
+
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+    geom_point()
+```
+
+or
+
+```r
+library(ggplot2)
+ggplot(data = NULL, aes(x = mtcars$wt, y = mtcars$mpg)) + 
+    geom_point()
+```
+
+
+plot the line...
+
+```{r}
+plot(pressure$temperature, pressure$pressure, type = 'l')
+points(pressure$temperature, pressure$pressure, col = "red")
+```
+
+```{r}
+ggplot(pressure, aes(x = temperature, y = pressure)) + 
+    geom_line() +
+    geom_point(color='red')
+```
+
+#### 2.3 Creating a Bar Graph
+
+barplot
+
+```{r}
+BOD
+barplot(BOD$demand, names.arg = BOD$Time)
+```
+
+when the x is continuous
+```{r}
+ggplot(BOD, aes(x = Time, y = demand)) + 
+    geom_col()
+```
+
+when the x is discrete
+```{r}
+ggplot(BOD, aes(x = factor(Time), y = demand)) + 
+    geom_col()
+```
+
+#### create a histogram
+
+```{r}
+hist(mtcars$mpg, breaks = 8)
+```
+
+```{r}
+ggplot(mtcars, aes(x = mpg)) + 
+    geom_histogram(binwidth = 4)
+```
+
+#### create a boxplot
+
+```{r}
+plot(ToothGrowth$supp, ToothGrowth$len)
+```
+
+```{r}
+boxplot(len ~ supp, data = ToothGrowth)
+```
+
+```{r}
+ggplot(ToothGrowth, aes(x = supp, y = len)) + 
+    geom_boxplot()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
